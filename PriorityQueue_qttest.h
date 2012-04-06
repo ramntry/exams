@@ -37,15 +37,19 @@ private slots:
     void testDequeueFromBigQueue()
     {
         int items[]  = { 10, 20, 50, 40, 30, 60, 70 };
-        for (size_t i = 0; i < sizeof(items)/sizeof(int); ++i)
-            pq->enqueue(items[i], items[i] / 10);
+        int rights[] = { 70, 60, 50, 40, 30, 20, 10 };
 
-        bool ok = true;
-        int right[]  = { 70, 60, 50, 40, 30, 20, 10 };
-            for (size_t i = 0; i < sizeof(items)/sizeof(int); ++i)
-                ok = ok && (pq->dequeue() == right[i]);
+        multipleAdd(items, sizeof(items)/sizeof(int));
+        QVERIFY(multipleCheck(rights, sizeof(rights)/sizeof(int)));
+    }
 
-        QVERIFY(ok);
+    void testReallocPriorityQueue()
+    {
+        int items[]  = { 500, 400, 300, 200, 100, 10, 20, 50, 40, 30, 60, 70 };
+        int rights[] = { 500, 400, 300, 200, 100, 70, 60, 50, 40, 30, 20, 10 };
+
+        multipleAdd(items, sizeof(items)/sizeof(int));
+        QVERIFY(multipleCheck(rights, sizeof(rights)/sizeof(int)));
     }
 
     void cleanup()
@@ -55,6 +59,23 @@ private slots:
 
 private:
     PriorityQueue<int> *pq;
+
+    void multipleAdd(int *items, size_t num)
+    {
+        for (size_t i = 0; i < num; ++i)
+            pq->enqueue(items[i], items[i] / 10);
+    }
+
+    bool multipleCheck(int *rights, size_t num)
+    {
+        bool ok = true;
+
+        for (size_t i = 0; i < num; ++i)
+            ok = ok && (pq->dequeue() == rights[i]);
+
+        return ok;
+    }
 };
 
 QTEST_APPLESS_MAIN(PriorityQueueTest)
+
